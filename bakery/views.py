@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 from django.db import transaction
@@ -107,3 +108,38 @@ def sales(request):
     sales_list = Sale.objects.order_by("-sale_date")
     products = Product.objects.order_by("name")
     return render(request, "bakery/sales.html", {"sales": sales_list, "products": products})
+
+
+def reports(request):
+    today = date.today()
+    sales_daily = Sale.objects.filter(sale_date=today).aggregate(total=Sum("total_amount"))["total"] or Decimal("0.00")
+    sales_monthly = Sale.objects.filter(
+        sale_date__year=today.year,
+        sale_date__month=today.month,
+    ).aggregate(total=Sum("total_amount"))["total"] or Decimal("0.00")
+    production_history = (
+        ProductionItem.objects
+        .values("production__production_date")
+        .annotate(total_quantity=Sum("quantity"))
+        .order_by("-production__production_date")[:10]
+    )
+    best_sellers = (
+        SaleItem.objects
+        .values("product__name")
+        .annotate(total_quantity=Sum("quantity"))
+        .order_by("-total_quantity")[:5]
+    )
+    low_stock = [ingredient for ingredient in Ingredient.objects.order_by("name") if ingredient.is_low_stock]
+    total_sales = Sale.objects.aggregate(total=Sum("total_amount"))["total"] or Decimal("0.00")
+    return render(
+        request,
+        "bakery/reports.html",
+        {
+            "sales_daily": sales_daily,
+            "sales_monthly": sales_monthly,
+            "production_history": production_history,
+            "best_sellers": best_sellers,
+            "low_stock": low_stock,
+            "total_sales": total_sales,
+        },
+    )

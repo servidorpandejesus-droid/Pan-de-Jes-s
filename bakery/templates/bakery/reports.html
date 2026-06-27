@@ -1,0 +1,53 @@
+{% extends 'bakery/dashboard.html' %}
+{% block content %}
+<div class="card">
+    <h2>Reportes</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">
+        <div style="background:#f1ece4;padding:1rem;border-radius:8px;">
+            <strong>Ventas hoy</strong>
+            <p>{{ sales_daily|floatformat:2 }} USD</p>
+        </div>
+        <div style="background:#f1ece4;padding:1rem;border-radius:8px;">
+            <strong>Ventas mes</strong>
+            <p>{{ sales_monthly|floatformat:2 }} USD</p>
+        </div>
+        <div style="background:#f1ece4;padding:1rem;border-radius:8px;">
+            <strong>Total ventas</strong>
+            <p>{{ total_sales|floatformat:2 }} USD</p>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <h2>Producción reciente</h2>
+    <table>
+        <tr><th>Fecha</th><th>Total producido</th></tr>
+        {% for item in production_history %}
+        <tr><td>{{ item.production__production_date }}</td><td>{{ item.total_quantity }}</td></tr>
+        {% empty %}
+        <tr><td colspan="2">No hay producción registrada.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="card">
+    <h2>Productos más vendidos</h2>
+    <table>
+        <tr><th>Producto</th><th>Cantidad</th></tr>
+        {% for item in best_sellers %}
+        <tr><td>{{ item.product__name }}</td><td>{{ item.total_quantity }}</td></tr>
+        {% empty %}
+        <tr><td colspan="2">No hay ventas registradas.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="card">
+    <h2>Insumos con stock bajo</h2>
+    <table>
+        <tr><th>Insumo</th><th>Stock</th><th>Mínimo</th></tr>
+        {% for ingredient in low_stock %}
+        <tr><td>{{ ingredient.name }}</td><td>{{ ingredient.stock_quantity }} {{ ingredient.unit }}</td><td>{{ ingredient.minimum_stock }}</td></tr>
+        {% empty %}
+        <tr><td colspan="3">No hay insumos en estado bajo.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
