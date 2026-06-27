@@ -18,6 +18,7 @@ class Product(models.Model):
     code = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
     category = models.ForeignKey(Category, related_name="products", on_delete=models.CASCADE)
+    image_url = models.URLField(blank=True, default="", help_text="URL de imagen del producto")
     quantity_available = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     created_at = models.DateTimeField(auto_now_add=True)
