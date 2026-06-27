@@ -1,0 +1,33 @@
+{% extends 'bakery/dashboard.html' %}
+{% block content %}
+<div class="card">
+    <h2>Registrar producción</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="date" name="production_date" required>
+        <select name="product_id" required>
+            {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="quantity" placeholder="Cantidad" min="1" required>
+        <input type="text" name="notes" placeholder="Notas">
+        <button type="submit">Guardar</button>
+    </form>
+</div>
+<div class="card">
+    <h2>Historial de producción</h2>
+    <table>
+        <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Notas</th></tr>
+        {% for production in productions %}
+            {% for item in production.items.all %}
+            <tr><td>{{ production.production_date }}</td><td>{{ item.product.name }}</td><td>{{ item.quantity }}</td><td>{{ production.notes }}</td></tr>
+            {% empty %}
+            <tr><td colspan="4">Sin items.</td></tr>
+            {% endfor %}
+        {% empty %}
+        <tr><td colspan="4">No hay producciones registradas.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

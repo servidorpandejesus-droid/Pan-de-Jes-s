@@ -1,0 +1,40 @@
+{% extends 'bakery/dashboard.html' %}
+{% block content %}
+<div class="card">
+    <h2>Registrar venta</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="date" name="sale_date" required>
+        <select name="product_id" required>
+            {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }} - {{ product.quantity_available }} disponibles</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="quantity" placeholder="Cantidad" min="1" required>
+        <input type="number" step="0.01" name="unit_price" placeholder="Precio unitario" required>
+        <input type="text" name="customer_name" placeholder="Cliente">
+        <textarea name="notes" placeholder="Notas"></textarea>
+        <button type="submit">Guardar</button>
+    </form>
+</div>
+<div class="card">
+    <h2>Ventas</h2>
+    <table>
+        <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Total</th><th>Cliente</th></tr>
+        {% for sale in sales %}
+            {% for item in sale.items.all %}
+            <tr>
+                <td>{{ sale.sale_date }}</td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price|floatformat:2 }}</td>
+                <td>{{ item.total_price|floatformat:2 }}</td>
+                <td>{{ sale.customer_name|default:'-' }}</td>
+            </tr>
+            {% endfor %}
+        {% empty %}
+        <tr><td colspan="6">No hay ventas registradas.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

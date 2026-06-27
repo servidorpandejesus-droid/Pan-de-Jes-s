@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PanControl</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f8f4ea; color: #2f2a22; }
+        nav { background: #8b5e3c; padding: 1rem; color: white; }
+        nav a { color: white; margin-right: 1rem; text-decoration: none; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+<nav>
+    <strong>PanControl</strong>
+    <a href="{% url 'bakery:home' %}">Inicio</a>
+    <a href="{% url 'bakery:products' %}">Productos</a>
+    <a href="{% url 'bakery:ingredients' %}">Insumos</a>
+    <a href="{% url 'bakery:productions' %}">Producción</a>
+    <a href="{% url 'bakery:sales' %}">Ventas</a>
+</nav>
+<div class="container">
+    <div class="card">
+        <h1>Sistema de Gestión Integral para Panaderías</h1>
+        <p>Controla inventarios, producción, ventas y consumo de insumos desde un solo lugar.</p>
+    </div>
+    {% block dashboard_summary %}
+    <div class="card">
+        <h2>Resumen operativo</h2>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <div style="flex:1 1 220px; background:#f1ece4; padding:1rem; border-radius:8px;">
+                <strong>Total ventas</strong>
+                <p>{{ total_sales_amount|floatformat:2 }} USD</p>
+            </div>
+            <div style="flex:1 1 220px; background:#f1ece4; padding:1rem; border-radius:8px;">
+                <strong>Producto más vendido</strong>
+                <p>{% if best_selling %}{{ best_selling.product__name }} ({{ best_selling.total_quantity }}){% else %}-{% endif %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <h2>Productos recientes</h2>
+        <ul>
+            {% for product in products %}
+            <li>{{ product.name }} - {{ product.quantity_available }} disponibles</li>
+            {% empty %}
+            <li>No hay productos registrados.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="card">
+        <h2>Insumos con stock bajo</h2>
+        <ul>
+            {% for ingredient in low_stock %}
+            <li>{{ ingredient.name }}: {{ ingredient.stock_quantity }} {{ ingredient.unit }} (mínimo {{ ingredient.minimum_stock }})</li>
+            {% empty %}
+            <li>Todos los insumos tienen stock adecuado.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endblock %}
+
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>
