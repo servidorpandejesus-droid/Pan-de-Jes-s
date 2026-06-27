@@ -1,1 +1,1 @@
-web: .venv\Scripts\gunicorn pancontrol.wsgi:application --bind 0.0.0.0:$PORT
+web: gunicorn pancontrol.wsgi:application --bind 0.0.0.0:$PORT
